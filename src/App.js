@@ -18,11 +18,15 @@ export default function App($app) {
       this.setState({
         ...this.state,
         currentTab: name,
-        photos: await request(name),
+        photos: await request(name === "all" ? '' : name),
+        //all 문자가 API 뒤에 전달되지않아야 전체 사진이 fetch됨
       });
     },
   });
-  const content = new Content();
+  const content = new Content({
+    $app,
+    initialState:[],
+  });
 
   // 상태 업데이트 함수
   this.setState = (newState) => {
