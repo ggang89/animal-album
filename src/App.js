@@ -1,6 +1,6 @@
-import Content from "./components/Content";
-import TabBar from "./components/TabBar";
-import { request } from "./components/api";
+import Content from "./components/Content.js";
+import TabBar from "./components/TabBar.js";
+import { request } from "./components/api.js";
 
 export default function App($app) {
   //index.js에서 전달한 요소를 받음
@@ -12,6 +12,7 @@ export default function App($app) {
   };
 
   const tabBar = new TabBar({
+    $app,
     initialState: "",
     onClick: async (name) => {
       this.setState({
