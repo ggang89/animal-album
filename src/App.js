@@ -7,47 +7,71 @@ export default function App($app) {
 
   // 필요한 상태 정의, 초기화
   this.state = {
-    currentTab: "all",
+    currentTab: window.location.pathname.replace("/", "") || "all",
     photos: [],
   };
 
-  const tabBar = new TabBar({
+  //tab
+  const tab = new TabBar({
     $app,
-    initialState: "",
+    initialState: this.state.currentTab,
     onClick: async (name) => {
-      this.setState({
-        ...this.state,
-        currentTab: name,
-        photos: await request(name === "all" ? '' : name),
-        //all 문자가 API 뒤에 전달되지않아야 전체 사진이 fetch됨
-      });
+      history.pushState(null, null, `/${name}`);
+      this.updateContent(name);
     },
   });
   const content = new Content({
     $app,
-    initialState:[],
+    initialState: [],
   });
 
   // 상태 업데이트 함수
   this.setState = (newState) => {
     //업데이트할 새로운 값을 newState로 받아서 내부에 할당
     this.state = newState;
-    tabBar.setState(this.state.currentTab);
+    tab.setState(this.state.currentTab);
     content.setState(this.state.photos);
   };
 
-  // 시작할 때 필요한 작업을 실행하고 초기상태를 설정하는 함수
-  const init = async () => {
+  // window.addEventListener('popstate', async() => {
+  //   const tabName = window.location.pathname.replace('/', '') || 'all';
+  //   const photos = await request(tabName === 'all' ? '' : tabName);
+
+  //   this.setState({
+  //     ...this.state,
+  //     currentTab: tabName,
+  //     photos:photos,
+  //   })
+  // });
+  this.updateContent = async (tabName) => {
+    // const name = tabName === "all" ? "" : tabName;
+    // const photos = await request(name);
+    // this.setState({
+    //   ...this.state,
+    //   currentTab: tabName,
+    //   photos: photos,
+    // });
     try {
-      // 초기상태에 필요한 값 : 모든 동물의 사진
-      const initialPhotos = await request();
+      const currentTab = tabName === "all" ? '' : tabName;
+      const photos = await request(currentTab);
       this.setState({
         ...this.state,
-        photos: initialPhotos,
-      });
+        currentTab: tabName,
+        photos:photos,
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
+  };
+
+  window.addEventListener("popstate", () => {
+    // 슬래쉬 뒤에 문자(없으면 all)
+    this.updateContent(window.location.pathname.replace("/", "") || "all");
+  });
+
+  // 시작할 때 필요한 작업을 실행하고 초기상태를 설정하는 함수
+  const init = async () => {
+    this.updateContent(this.state.currentTab);
   };
   init();
 }
