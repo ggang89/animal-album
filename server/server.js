@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, "..")));
 // static : 정적파일에 접근할 수 있도록 server.js파일의 상위 폴더 지정
 // path모듈이 가진 join메서드를 사용해 경로 나타내기
 
-app.get("*/", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", 'index.html'));
 });
 
